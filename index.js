@@ -17,17 +17,24 @@ const connectionString = process.env.connectionString;
 const dbName = process.env.dbName;
 
 let doBatches  = (callback) => {
-    MongoClient.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true }, async (err, client) => {
-        if (err) {
-            console.log(err);
-            throw err;
-        }
+    try {
+        MongoClient.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true }, async (err, client) => {
+            if (err) {
+                console.log(err);
+                throw err;
+            }
+    
+            const db = client.db(dbName);
+    
+            let output = await db.collection('batches').find({}).toArray();
+    
+            callback(output);
+        });
+        
+    } catch (e) {
+        callback(e);
+    }
+    
 
-        const db = client.db(dbName);
 
-        let output = await db.collection('batches').find({}).toArray();
-
-        callback(output);
-
-    });
 };
