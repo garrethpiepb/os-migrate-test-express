@@ -3,7 +3,10 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
-app.get('/', (req, res) => res.send('Hello World!'));
+
+app.use(express.static('static'));
+
+app.get('/', (req, res) => res.sendFile(__dirname + '/views/index.html'));
 
 app.get('/batches', (req, res) => {
     doBatches((data) => {
@@ -19,6 +22,7 @@ const dbName = process.env.dbName;
 let doBatches  = (callback) => {
     try {
         MongoClient.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true }, async (err, client) => {
+            
             if (err) {
                 console.log(err);
                 throw err;
@@ -30,7 +34,7 @@ let doBatches  = (callback) => {
     
             callback(output);
         });
-        
+
     } catch (e) {
         callback(e);
     }
